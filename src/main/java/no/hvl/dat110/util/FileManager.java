@@ -127,9 +127,17 @@ public class FileManager {
 		// Task: Given a filename, find all the peers that hold a copy of this file
 		
 		// generate the N replicas from the filename by calling createReplicaFiles()
-		
+		createReplicaFiles();
+
 		// iterate over the replicas of the file
-		
+		for(int i = 0; i < numReplicas; i++){
+
+			BigInteger nr = this.replicafiles[i];
+			NodeInterface successor = this.chordnode.findSuccessor(nr);
+			Message msg = successor.getFilesMetadata(nr);
+			activeNodesforFile.add(msg);
+		}
+
 		// for each replica, do findSuccessor(replica) that returns successor s.
 		
 		// get the metadata (Message) of the replica from the successor (i.e., active peer) of the file
@@ -148,6 +156,11 @@ public class FileManager {
 		// Task: Given all the active peers of a file (activeNodesforFile()), find which is holding the primary copy
 		
 		// iterate over the activeNodesforFile
+		for(Message msg : activeNodesforFile){
+			if(msg.isPrimaryServer()){
+				return Util.getProcessStub(msg.getNodeName(), msg.getPort());
+			}
+		}
 		
 		// for each active peer (saved as Message)
 		
