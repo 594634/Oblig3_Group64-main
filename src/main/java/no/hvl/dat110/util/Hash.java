@@ -59,10 +59,9 @@ public class Hash {
 		
 		// return the address size
 
-		BigInteger addressCount = BigInteger.valueOf(2 ^ bitSize());
+		BigInteger bigInt = new BigInteger("2");
 
-
-		return addressCount;
+		return bigInt.pow(bitSize());
 	}
 	
 	public static int bitSize() {

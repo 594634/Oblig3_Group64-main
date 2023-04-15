@@ -46,30 +46,43 @@ public class Util {
 		
 		// Task: given an identifier, id: check whether pred < id <= node
 		boolean isGood = false;
-		int size = 0;
-		if(lower.intValue() > upper.intValue()){
-			size = lower.intValue() + upper.intValue() -1;
-		} else {
-			size = upper.intValue() - lower.intValue() +1;
-		}
+//		int size = 0;
+//		if(lower.intValue() > upper.intValue()){
+//			size = lower.intValue() + upper.intValue() -1;
+//		} else {
+//			size = upper.intValue() - lower.intValue() +1;
+//		}
+//
+//		int[] nummer = new int[size];
+//		int x = 0;
+//
+//		for(int i = lower.intValue(); i == upper.intValue(); i++){
+//
+//			if(i == 10){
+//				i = 0;
+//			}
+//
+//			nummer[x] = i;
+//			x++;
+//		}
+//
+//		if(Arrays.stream(nummer).findAny().equals(id)){
+//			isGood = true;
+//		}
 
-		int[] nummer = new int[size];
-		int x = 0;
+		BigInteger nupper = upper;
+		BigInteger addresssize = Hash.addressSize();
+		if (lower.compareTo(upper)==1) {
+			nupper = upper.add(addresssize);
 
-		for(int i = lower.intValue(); i == upper.intValue(); i++){
-
-			if(i == 10){
-				i = 0;
+			if((id.compareTo(new BigInteger("0"))==1 || id.compareTo(new BigInteger("0"))==0) &&
+					((id.compareTo(upper)==-1 || id.compareTo(upper)==0))) {
+				id = id.add(addresssize);
 			}
-
-			nummer[x] = i;
-			x++;
 		}
 
-		if(Arrays.stream(nummer).findAny().equals(id)){
-			isGood = true;
-		}
-
+		upper = nupper;
+		isGood = (id.compareTo(lower)==1 || id.compareTo(lower)==0) && (id.compareTo(upper)==-1 || id.compareTo(upper)==0);
 		return isGood;
 
 	}

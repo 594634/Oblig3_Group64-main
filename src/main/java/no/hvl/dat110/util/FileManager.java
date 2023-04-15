@@ -59,10 +59,12 @@ public class FileManager {
 	public void createReplicaFiles() {
 	 	
 		// set a loop where size = numReplicas
+		replicafiles = new BigInteger[numReplicas];
+		String file;
 		for(int i = 0; i < numReplicas; i++){
-			filename = new String("filename" + i);
-
-			replicafiles[i] = Hash.hashOf(filename);
+			file = filename + i;
+			BigInteger Ha = Hash.hashOf(file);
+			replicafiles[i] = Ha;
 		}
 		// replicate by adding the index to filename
 		
@@ -79,14 +81,19 @@ public class FileManager {
     public int distributeReplicastoPeers() throws RemoteException {
     	
     	// randomly appoint the primary server to this file replicas
-    	Random rnd = new Random(); 							
-    	int index = rnd.nextInt(Util.numReplicas-1);
-    	
-    	int counter = 0;
-	
+
+		int counter = 0;
     	// Task1: Given a filename, make replicas and distribute them to all active peers such that: pred < replica <= peer
-		Util.checkInterval(bigint, bigint, bigint);
+		Random rand = new Random();
+		int index = rand.nextInt(Util.numReplicas-1);
 		createReplicaFiles();
+
+		for (BigInteger key : replicafiles){
+			NodeInterface successor = chordnode.findSuccessor(key);
+			successor.addKey(key);
+			successor.saveFileContent(filename, key, bytesOfFile, counter == index);
+			counter++;
+		}
     	
     	// Task2: assign a replica as the primary for this file. Hint, see the slide (project 3) on Canvas
     	

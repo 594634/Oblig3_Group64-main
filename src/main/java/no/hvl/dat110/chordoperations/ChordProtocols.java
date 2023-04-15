@@ -6,9 +6,11 @@ package no.hvl.dat110.chordoperations;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 
+import no.hvl.dat110.util.Hash;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -157,7 +159,34 @@ public class ChordProtocols {
 			logger.info("Fixing the FingerTable for the Node: "+ chordnode.getNodeName());
 	
 			// get the finger table from the chordnode (list object)
-			
+			int s = Hash.bitSize();
+
+			List<NodeInterface> fingers = ((Node) chordnode).getFingerTable();
+
+			BigInteger modulos = Hash.addressSize();
+
+			for(int i = 0; i < s; i++){
+				BigInteger nextsuccID = new BigInteger("2");
+				nextsuccID = nextsuccID.pow(i);
+
+				BigInteger succnodeID = chordnode.getNodeID().add(nextsuccID);
+				succnodeID =succnodeID.mod(modulos);
+
+				NodeInterface succnode = null;
+				try {
+					succnode = chordnode.findSuccessor(succnodeID);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+
+				if(succnode != null) {
+					try {
+						fingers.set(i, succnode);
+					} catch (IndexOutOfBoundsException e) {
+						fingers.add(i, succnode);
+					}
+				}
+			}
 			// ensure to clear the current finger table
 			
 			// get the address size from the Hash class. This is the modulus and our address space (2^mbit = modulus)
